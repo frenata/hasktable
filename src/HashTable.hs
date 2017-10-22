@@ -3,7 +3,7 @@ module HashTable
   where
 
 import Data.Array (array, Array, (//), (!))
-import qualified Data.List as List
+import qualified Data.List as List (find, length, delete)
 import Data.Hashable
 import Debug.Trace
 
@@ -22,12 +22,12 @@ insert (k, v) (HashTable arr) =
     i = mHash (List.length arr) k 
     xs = (k,v) : (arr ! i)
     
-search :: (Hashable a, Eq a) => a -> HashTable a b -> Maybe (a, b)
-search key (HashTable arr) =
-  List.find (\(k,v) -> k == key) xs
+search :: (Hashable k, Eq k) => k -> HashTable k v -> Maybe (k, v)
+search key (HashTable table) =
+  List.find (\(k,v) -> k == key) bucket
   where
-    i = mHash (List.length arr) key
-    xs = arr ! i
+    position = mHash (List.length table) key
+    bucket = table ! position
 
 delete :: (Hashable a, Eq a, Eq b) => a -> HashTable a b -> HashTable a b
 delete key (HashTable arr) =
@@ -44,9 +44,4 @@ mHash :: Hashable a => Int -> a -> Int
 mHash n =
   (`mod` n) . hash
 
-len :: HashTable a b -> Int
-len (HashTable arr) = List.length arr
-
 (|>) = flip ($)
-
-log x = trace (show x) x
